@@ -1,7 +1,7 @@
-import json
 import requests
 import time
 import yadisk
+import datetime
 from progress.bar import IncrementalBar
 
 APP_ID = 7535898
@@ -49,7 +49,9 @@ class User:
                     if element_count <= 1:
                         name['name'] = str(name['count'])
                     else:
-                        name['name'] = str(name['count']) + str(name['date'])
+                        timestamp = name['date']
+                        date = datetime.datetime.fromtimestamp(timestamp)
+                        name['name'] = str(name['count']) + '_' + str(date.strftime('%Y-%m-%d.%H.%M.%S'))
         for element in pict_list:
             del (element['count'], element['date'])
         return pict_list
@@ -64,10 +66,10 @@ class User:
             self.yd_token.mkdir(dir_path)
         except yadisk.exceptions.PathExistsError:
             pass
+        info_json = open(f'info.json', 'w')
         for image in pictures_list:
             to_json = {'file_name': image['name'], 'size': image['size']}
-            with open(f'info.json', 'a') as info_json:
-                json.dump(to_json, info_json)
+            info_json.write(str(to_json) + '\n')
             try:
                 self.yd_token.upload_url(image['url'], f"{dir_path}/{image['name']}.jpg")
             except yadisk.exceptions.PathExistsError:
@@ -75,6 +77,7 @@ class User:
             progress_bar.next()
             time.sleep(1)
         progress_bar.finish()
+        info_json.close()
 
 
 def get_user_id():

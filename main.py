@@ -5,7 +5,7 @@ import datetime
 from progress.bar import IncrementalBar
 
 APP_ID = 7535898
-VK_SERVICE_KEY = '2711e5862711e5862711e586fd2763189c227112711e5867818f4dc214d9ce650b8675b'
+VK_SERVICE_KEY = ''
 
 
 class User:
@@ -49,9 +49,12 @@ class User:
                     if element_count <= 1:
                         name['name'] = str(name['count'])
                     else:
-                        timestamp = name['date']
-                        date = datetime.datetime.fromtimestamp(timestamp)
-                        name['name'] = str(name['count']) + '_' + str(date.strftime('%Y-%m-%d.%H.%M.%S'))
+                        for date_name in pict_list:
+                            if date_name['count'] == name['count']:
+                                timestamp = date_name['date']
+                                date = datetime.datetime.fromtimestamp(timestamp)
+                                date_name['name'] = str(date_name['count']) + '_' + str(
+                                    date.strftime('%Y-%m-%d.%H.%M.%S'))
         for element in pict_list:
             del (element['count'], element['date'])
         return pict_list
